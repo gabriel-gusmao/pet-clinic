@@ -6,12 +6,12 @@ import guru.springframework.petclinic.services.PetService;
 import guru.springframework.petclinic.services.VisitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.beans.PropertyEditorSupport;
+import java.time.LocalDate;
 import java.util.Map;
 
 @Controller
@@ -23,6 +23,18 @@ public class VisitController {
     public VisitController(VisitService visitService, PetService petService) {
         this.visitService = visitService;
         this.petService = petService;
+    }
+
+    @InitBinder
+    public void dataBinder(WebDataBinder dataBinder) {
+        dataBinder.setDisallowedFields("id");
+
+        dataBinder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException{
+                setValue(LocalDate.parse(text));
+            }
+        });
     }
 
     /**
